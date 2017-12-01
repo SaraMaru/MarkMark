@@ -1,26 +1,33 @@
 package com.example.zju.markmark;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Spannable;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.BufferedReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -30,6 +37,9 @@ public class MainActivity extends AppCompatActivity
     private String filePath = "";
     private TextView textView;
     private String text;
+
+    private boolean editMode = false;
+    private String oldText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,13 +52,34 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Begin Editing", Snackbar.LENGTH_LONG)
+
+                textView = (TextView) findViewById(R.id.content);
+                text = textView.getText().toString();
+                editMode = !editMode;
+                if (editMode) {
+                    String newText = "";
+                    for (String retval: text.split("。")) {
+                        retval = retval.concat("。\n\n");
+                        newText = newText.concat(retval);
+                    }
+                    /*textView.setText(newText);*/
+                    textView.setText(text, TextView.BufferType.SPANNABLE);
+                    getEachSentence(textView);
+                    textView.setMovementMethod(LinkMovementMethod.getInstance());
+                    oldText = text;
+                }
+                else {
+                    /*textView.setText(oldText);*/
+                    textView.setText(text);
+                }
+
+                /*Snackbar.make(view, "Begin Editing", Snackbar.LENGTH_LONG)
                         .setAction("How to edit?",new View.OnClickListener(){
                             @Override
                             public void onClick(View v) {
                                 Toast.makeText(MainActivity.this,"Draw and click.",Toast.LENGTH_SHORT).show();
                             }
-                        }).show();
+                        }).show();*/
             }
         });
 
@@ -102,7 +133,9 @@ public class MainActivity extends AppCompatActivity
 
             textView = (TextView) findViewById(R.id.content);
             textView.setText(text);
+            Log.i(TAG, "onStart()");
         }
+        editMode = false;
     }
     @Override
     public void onBackPressed() { //按下手机的后退按钮
@@ -169,4 +202,63 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+    /*public void textClicked(View v) {
+        if (text != null) {
+            String sentenceString = clickedSentence;
+            int sentenceNumber = 1;
+            String articleString = filePath;
+            Intent intent = BangActivity.newIntent(MainActivity.this, articleString, sentenceNumber, sentenceString);
+            startActivity(intent);
+        }
+    }*/
+
+    public void getEachSentence(TextView textView) {
+        Spannable spans = (Spannable)textView.getText();
+        Integer[] indices = getIndices(textView.getText().toString().trim(), '。');
+        int start = 0;
+        int end;
+        for (int i = 0; i <= indices.length; i++) {
+            ClickableSpan clickSpan = getClickableSpan(i);
+            end = (i < indices.length ? indices[i] : spans.length());
+            spans.setSpan(clickSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            start = end + 1;
+        }
+        /*textView.setHighlightColor(Color.BLUE);*/
+    }
+
+    private ClickableSpan getClickableSpan(final int index){
+        return new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                TextView tv = (TextView) widget;
+                String s = tv.getText().subSequence(tv.getSelectionStart(), tv.getSelectionEnd()).toString();
+                if (text != null) {
+                    String sentenceString = s;
+                    int sentenceNumber = index;
+                    String articleString = filePath;
+                    Intent intent = BangActivity.newIntent(MainActivity.this, articleString, sentenceNumber, sentenceString);
+                    startActivity(intent);
+                }
+                Log.i(TAG, "tapped on:" + s);
+            }
+            @Override
+            public void updateDrawState(TextPaint ds) {
+                ds.setColor(Color.BLACK);
+                ds.setUnderlineText(false);
+            }
+        };
+    }
+
+    public static Integer[] getIndices(String s, char c) {
+        int pos = s.indexOf(c, 0);
+        List<Integer> indices = new ArrayList<Integer>();
+        while (pos != -1) {
+            indices.add(pos);
+            pos = s.indexOf(c, pos + 1);
+        }
+        return (Integer[]) indices.toArray(new Integer[0]);
+    }
+
 }

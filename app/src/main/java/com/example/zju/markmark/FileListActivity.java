@@ -1,10 +1,10 @@
 package com.example.zju.markmark;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,20 +13,20 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
-import android.os.Environment;
-import android.widget.Toast;
+
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+
 
 public class FileListActivity extends AppCompatActivity {
 
     private static final String TAG = "FileListActivity";
     private String fileType = "";
     private boolean bShowAll = false;
-    private final String txtDefaultFolder = "/storage/emulated/0/标注文本";
-    private final String jsonDefaultFolder = "/storage/emulated/0/Android";
+    private final String txtDefaultFolder = "/storage/emulated/0/TXT";
+    private final String jsonDefaultFolder = "/storage/emulated/0/JS";
     private ListView listView;
     private SimpleAdapter simpleAdapter;
     private ProgressBar pb;
@@ -84,8 +84,10 @@ public class FileListActivity extends AppCompatActivity {
                 }
                  GenFileListAll(file,paths,names);
             } else { //是文件
-                if (file.getName().endsWith("."+fileType)) { //如果文件名以 .txt或者.json结尾
-                    names.add(file.getName());
+                String name = file.getName();
+                String extension = name.substring(name.lastIndexOf(".")+1);
+                if (extension.toLowerCase().equals(fileType)) { //如果文件名以 .txt,.TXT或者.json,.JSON结尾
+                    names.add(name);
                     paths.add(file.getParent());
                 }
             }
