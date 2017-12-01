@@ -216,12 +216,14 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_opentxt) {
+            editMode =false;
             Intent intent = new Intent(MainActivity.this,FileListActivity.class);
             intent.putExtra("file_type","txt");
             startActivity(intent);
         } else if (id == R.id.nav_savejson) {
 
         } else if (id == R.id.nav_openjson) {
+            editMode =false;
             Intent intent = new Intent(MainActivity.this,FileListActivity.class);
             intent.putExtra("file_type","json");
             startActivity(intent);
