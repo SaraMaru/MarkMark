@@ -1,10 +1,13 @@
 package com.example.zju.markmark;
 
+import java.io.Serializable;
+
 /**
  * Created by 本 on 2017-11-27.
  */
 
-public class MarkEntity {
+public class MarkEntity implements Serializable{
+
     private String label;
     private int start;
     private String text;
@@ -29,4 +32,5 @@ public class MarkEntity {
     public String getLabel() {
         return label;
     }
+
 }

@@ -1,15 +1,16 @@
 package com.example.zju.markmark;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by 本 on 2017-11-27.
  */
 
-public class Mark {
+public class Mark implements Serializable{
     private String articleID;
-    private ArrayList<MarkEntity> entityMentions = new ArrayList<MarkEntity>();
-    private ArrayList<MarkRelation> relationMentions = new ArrayList<MarkRelation>();
+    private ArrayList<MarkEntity> entityMentions = new ArrayList<>();
+    private ArrayList<MarkRelation> relationMentions = new ArrayList<>();
     private int sentID;
     private String sentText;
 
@@ -17,6 +18,13 @@ public class Mark {
         this.articleID = articleID;
         this.sentID = sentID;
         this.sentText = sentText;
+    }
+
+    public Mark() {
+    }
+
+    public int getSentID() {
+        return sentID;
     }
 
     public void setEntityMentions(MarkEntity e) {

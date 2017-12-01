@@ -1,10 +1,13 @@
 package com.example.zju.markmark;
 
+import java.io.Serializable;
+
 /**
  * Created by 本 on 2017-11-27.
  */
 
-public class MarkRelation {
+public class MarkRelation implements Serializable{
+
     private String em1Text;
     private String em2Text;
     private String label;
@@ -19,6 +22,9 @@ public class MarkRelation {
         this.label = label;
         this.start1 = start1;
         this.end1 = end1;
+    }
+
+    public MarkRelation() {
     }
 
     public void setEm2Text(String em2Text, int start2, int end2) {
@@ -46,4 +52,5 @@ public class MarkRelation {
     public String getLabel() {
         return label;
     }
+
 }

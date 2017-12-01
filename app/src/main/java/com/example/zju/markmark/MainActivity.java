@@ -14,9 +14,12 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -25,6 +28,9 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,6 +38,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -40,11 +48,14 @@ public class MainActivity extends AppCompatActivity
     private String fileType = "";
     private String filePath = "";
     private TextView textView;
-    private String text;
-    private String splitedText;
+    private String text = "";
+    private String splitedText = "";
+    private SpannableString markedText;
     private FloatingActionButton editFab;
     private FloatingActionButton backFab;
     private boolean editMode = false;
+    private ArrayList<Mark> markList;
+    Gson gson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +63,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        gson = new Gson();
 
         editFab = (FloatingActionButton) findViewById(R.id.edit_fab);
         editFab.setOnClickListener(new View.OnClickListener() {
@@ -60,7 +72,7 @@ public class MainActivity extends AppCompatActivity
                 editFab.setVisibility(View.GONE);
                 backFab.setVisibility(View.VISIBLE);
                 textView = (TextView) findViewById(R.id.content);
-                text = textView.getText().toString();
+                //text = textView.getText().toString();
                 editMode = !editMode;
                 StringBuffer newText = new StringBuffer();
                 for (String retval : text.replace("\n", "").split("。")) {
@@ -80,7 +92,12 @@ public class MainActivity extends AppCompatActivity
            public void onClick(View view) {
                backFab.setVisibility(View.GONE);
                editFab.setVisibility(View.VISIBLE);
-               textView.setText(text);
+               if(fileType.equals("txt")) {
+                   Log.d(TAG, "F");
+                   showMarkedText();
+               } else {
+                   textView.setText(text);
+               }
            }
         });
 
@@ -110,28 +127,29 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    void drawLines() {
-       ;
-    }
-
     @Override
     public void onStart(){
         super.onStart();
         if (filePath!=null && !filePath.equals("")) {
             Log.d(TAG, filePath + "  of  " + fileType);
             textView = (TextView) findViewById(R.id.content);
-            if(editMode) {
+            if (editMode) {
                 editFab.setVisibility(View.GONE);
                 backFab.setVisibility(View.VISIBLE);
                 textView.setText(splitedText, TextView.BufferType.SPANNABLE);
                 getEachSentence(textView);
                 textView.setMovementMethod(LinkMovementMethod.getInstance());
-                drawLines();
             }
             else {
                 editFab.setVisibility(View.VISIBLE);
                 backFab.setVisibility(View.GONE);
-                BufferedReader br = null;
+                text = readFile (new File(filePath));
+                if(fileType.equals("txt")) {
+                    showMarkedText();
+                } else {
+                    textView.setText(text);
+                }
+                /*BufferedReader br = null;
                 try {
                     br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath),"UTF-8"));
                     StringBuffer sb = new StringBuffer();
@@ -150,8 +168,7 @@ public class MainActivity extends AppCompatActivity
                             e.printStackTrace();
                         }
                     }
-                }
-                textView.setText(text);
+                }*/
             }
             Log.i(TAG, "onStart()");
         }
@@ -216,7 +233,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_opentxt) {
-            editMode =false;
+            editMode = false;
             Intent intent = new Intent(MainActivity.this,FileListActivity.class);
             intent.putExtra("file_type","txt");
             startActivity(intent);
@@ -287,4 +304,82 @@ public class MainActivity extends AppCompatActivity
         return (Integer[]) indices.toArray(new Integer[0]);
     }
 
+    private String readFile(File file) {
+        String result = "";
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(file),"UTF-8"));
+            StringBuffer sb = new StringBuffer();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line+"\n"); //readLine会消除\n
+            }
+            result = sb.toString();
+        } catch(Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (br!=null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return result;
+    }
+
+    private void showMarkedText(){
+        /*String str="默认颜色<font color='#FF0000'>红颜色</font>";
+                Spanned htmlstr;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    htmlstr = Html.fromHtml(str,Html.FROM_HTML_MODE_LEGACY);
+                } else {
+                    htmlstr = Html.fromHtml(str);
+                }*/
+        /*if (markedText.length()>0) {
+            textView.setText(markedText);
+            return;
+        }*/
+        //Log.d(TAG, "A");
+        String pureName = filePath.substring(filePath.lastIndexOf("/")+1,filePath.lastIndexOf("."));
+        File jsonDir = new File(FileListActivity.jsonDefaultFolder);
+        File[] files = jsonDir.listFiles();
+        Pattern pattern = Pattern.compile(pureName);
+        markList = new ArrayList<Mark>();
+        //Log.d(TAG, "B");
+        for (File file : files) {
+            Matcher matcher = pattern.matcher(file.getName());
+            if (matcher.find()) {
+                String jsonData = readFile(file);
+                markList.add(gson.fromJson(jsonData,Mark.class));
+            }
+        }
+        Log.d(TAG, "markList's len: "+markList.size());
+        String[] sentences = text.split("。");
+        int size = sentences.length;
+        Log.d(TAG, "number of sentences: "+size);
+        int[] lens = new int[size];
+        for (int i=0; i<size; i++) {
+            lens[i] = sentences[i].length()+1;
+        }
+        markedText = new SpannableString(text);
+        for ( Mark mark : markList ) {
+            int sentID = mark.getSentID();
+            int base = 0;
+            for (int ID=0; ID<sentID; ID++) {
+                base += lens[ID];
+            }
+            Log.d(TAG, "base: "+base);
+            for (MarkEntity markEntity : mark.getEntityMentions()) {
+                int start = base + markEntity.getStart();
+                int end = base + markEntity.getEnd() + 1;//what?!
+                Log.d(TAG, "start: "+start+" end: "+end);
+                ForegroundColorSpan colorSpan = new ForegroundColorSpan(Color.parseColor("#0099EE"));
+                markedText.setSpan(colorSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+
+        }
+        textView.setText(markedText);
+    }
 }

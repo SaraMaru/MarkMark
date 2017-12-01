@@ -29,10 +29,9 @@
             android:parentActivityName=".MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize" >
         </activity>
-	<activity
+	    <activity
             android:name=".BangActivity"
-            android:theme="@style/AppTheme.NoTitle"
-            android:configChanges="orientation|keyboardHidden|screenSize" >
+            android:theme="@style/AppTheme.NoTitle" >
         </activity>
     </application>
 
