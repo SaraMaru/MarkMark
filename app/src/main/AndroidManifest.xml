@@ -15,7 +15,8 @@
             android:name=".MainActivity"
             android:launchMode="singleTask"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="orientation|keyboardHidden|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,7 +26,13 @@
         <activity
             android:name=".FileListActivity"
             android:launchMode="singleTask"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize" >
+        </activity>
+	<activity
+            android:name=".BangActivity"
+            android:theme="@style/AppTheme.NoTitle"
+            android:configChanges="orientation|keyboardHidden|screenSize" >
         </activity>
     </application>
 
