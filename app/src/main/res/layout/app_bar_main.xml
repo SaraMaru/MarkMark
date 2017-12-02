@@ -30,7 +30,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:visibility="gone"
-        app:srcCompat="@android:drawable/ic_menu_edit" />
+        app:srcCompat="@drawable/ic_mode_edit_white_24dp" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/back_fab"
@@ -39,6 +39,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         android:visibility="gone"
-        app:srcCompat="@android:drawable/ic_menu_upload" />
+        app:srcCompat="@drawable/ic_goback_white_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

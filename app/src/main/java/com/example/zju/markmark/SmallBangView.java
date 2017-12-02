@@ -167,8 +167,8 @@ public class SmallBangView extends GridLayout {
             final int top = (getChildAt(mE.getStart())).getTop();
             final int right = (getChildAt(mE.getEnd())).getRight();
             final int bottom = (getChildAt(mE.getEnd())).getBottom();
-            if (mE.getLabel() == "Location->Country") drawMarkedEntity(canvas, left, top, right, bottom, eaPaint, childHeight, childWidth);
-            else if (mE.getLabel() == "Location->City") drawMarkedEntity(canvas, left, top, right, bottom, ebPaint, childHeight, childWidth);
+            if (mE.getLabel() == "Country") drawMarkedEntity(canvas, left, top, right, bottom, eaPaint, childHeight, childWidth);
+            else if (mE.getLabel() == "City") drawMarkedEntity(canvas, left, top, right, bottom, ebPaint, childHeight, childWidth);
             else drawMarkedEntity(canvas, left, top, right, bottom, ecPaint, childHeight, childWidth);
             Log.i(TAG, "now draw the marked entities");
         } // Draw the marked entities

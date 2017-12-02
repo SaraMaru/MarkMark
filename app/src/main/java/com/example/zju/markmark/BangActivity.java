@@ -130,7 +130,7 @@ public class BangActivity extends AppCompatActivity {
 
     public void doclick1(View v) {
         if (!mSmallBangView.getChosenEmpty()) {
-            setEntity("Location->Country");
+            setEntity("Country");
             mSmallBangView.clearChosen();
             dialog.cancel();
         }
@@ -141,7 +141,7 @@ public class BangActivity extends AppCompatActivity {
     }
     public void doclick2(View v) {
         if (!mSmallBangView.getChosenEmpty()) {
-            setEntity("Location->City");
+            setEntity("City");
             mSmallBangView.clearChosen();
             dialog.cancel();
         }

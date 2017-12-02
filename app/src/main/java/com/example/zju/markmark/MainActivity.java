@@ -136,13 +136,13 @@ public class MainActivity extends AppCompatActivity
             textView = (TextView) findViewById(R.id.content);
             if (editMode) {
                 editFab.setVisibility(View.GONE);
-                backFab.setVisibility(View.VISIBLE);
+                if(fileType.equals("txt")) { backFab.setVisibility(View.VISIBLE); }
                 textView.setText(splitedText, TextView.BufferType.SPANNABLE);
                 getEachSentence(textView);
                 textView.setMovementMethod(LinkMovementMethod.getInstance());
             }
             else {
-                editFab.setVisibility(View.VISIBLE);
+                if(fileType.equals("txt")) { editFab.setVisibility(View.VISIBLE); }
                 backFab.setVisibility(View.GONE);
                 text = readFile (new File(filePath));
                 if(fileType.equals("txt")) {
@@ -355,38 +355,55 @@ public class MainActivity extends AppCompatActivity
             }
         }
         Log.d(TAG, "markList's len: "+markList.size());
+        if (markList.size()==0) {
+            textView.setText(text);
+            return;
+        }
+
         String[] sentences = text.split("。");
         int size = sentences.length;
         Log.d(TAG, "number of sentences: "+size);
         int[] lens = new int[size];
+        SpannableStringBuilder[] spannableSentences = new SpannableStringBuilder[size];
         for (int i=0; i<size; i++) {
             lens[i] = sentences[i].length()+1;
+            spannableSentences[i] = new SpannableStringBuilder(sentences[i].concat("。"));
         }
-        //markedText = new SpannableString(text);
-        SpannableStringBuilder ssb = new SpannableStringBuilder();
+
         for ( Mark mark : markList ) {
             int sentID = mark.getSentID();
-            int base = 0;
-            for (int ID=0; ID<sentID; ID++) {
-                base += lens[ID];
-            }
-            Log.d(TAG, "base: "+base);
-            int lastEnd = -1;
+            int numOfEnters = 0; //开头的\n的个数
+            char[] ch = sentences[sentID].toCharArray();
+            for (int i =0; ch[i]=='\n'; i++) { numOfEnters++; }
+            Log.d(TAG, "numOfEnters"+numOfEnters);
             for (MarkEntity markEntity : mark.getEntityMentions()) {
+                int start = numOfEnters + markEntity.getStart();
+                int end = numOfEnters + markEntity.getEnd()+1;
                 String label = markEntity.getLabel();
-                //int start = base + markEntity.getStart();
-                int end = base + markEntity.getEnd();
+                Log.d(TAG, "start:"+start);
                 Log.d(TAG, "end: "+end);
-                ssb.append( new SpannableString(text.substring(lastEnd+1,end)) );
-                ForegroundColorSpan colorSpan = new ForegroundColorSpan(Color.parseColor("#0099EE"));
-                //markedText.setSpan(colorSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                SpannableString ss = new SpannableString(label);
-                ss.setSpan(colorSpan, 0, label.length()-1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                ssb.append(ss);
-                lastEnd = end;
+
+                int color = Color.parseColor("#0099EE");
+                if (label.equals("Country")) {
+                    color = Color.parseColor("#FFB11B");
+                } else if (label.equals("City")) {
+                    color = Color.parseColor("#8F77B5");
+                } else if (label.equals("Person")) {
+                    color = Color.parseColor("#CAAD5F");
+                }
+                ForegroundColorSpan colorSpan = new ForegroundColorSpan(color);
+                spannableSentences[sentID].setSpan(colorSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                //spannableSentences[sentID].append( new SpannableString(sentences[sentID].substring(0,start)) );
+                //SpannableString ss = new SpannableString(label);
+                //spannableSentences[sentID].insert(end+1,ss);
+                /*spannableSentences[sentID].append( new SpannableString(
+                        sentences[sentID].substring(end, sentences[sentID].length()).concat("。")));*/
             }
-            ssb.append( new SpannableString(text.substring(lastEnd+1,text.length()-1)));
         }
-        textView.setText(ssb);
+        SpannableStringBuilder result = new SpannableStringBuilder("");
+        for (SpannableStringBuilder ssb : spannableSentences) {
+            result.append(ssb);
+        }
+        textView.setText(result);
     }
 }
