@@ -2,34 +2,38 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_opentxt"
-            android:icon="@drawable/ic_menu_txt"
-            android:title="打开TXT" />
-        <item
-            android:id="@+id/nav_savejson"
-            android:icon="@drawable/ic_menu_json_save_2"
-            android:title="输出JSON" />
-        <item
-            android:id="@+id/nav_openjson"
-            android:icon="@drawable/ic_menu_json_open"
-            android:title="浏览JSON" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="操作说明" />
+        <item android:title="基本操作">
+            <menu>
+                <item
+                    android:id="@+id/nav_opentxt"
+                    android:icon="@drawable/ic_menu_txt"
+                    android:title="打开TXT" />
+                <!--<item-->
+                    <!--android:id="@+id/nav_savejson"-->
+                    <!--android:icon="@drawable/ic_menu_json_save_2"-->
+                    <!--android:title="输出JSON" />-->
+                <item
+                    android:id="@+id/nav_openjson"
+                    android:icon="@drawable/ic_menu_json_open"
+                    android:title="浏览JSON" />
+                <item
+                    android:id="@+id/nav_label"
+                    android:icon="@drawable/ic_bookmark_border_black_24dp"
+                    android:title="管理标签" />
+            </menu>
+        </item>
     </group>
 
-    <item android:title="工具">
+    <item android:title="其它操作">
         <menu>
+            <item
+                android:id="@+id/nav_intro"
+                android:icon="@drawable/ic_help_black_24dp"
+                android:title="操作说明" />
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"
                 android:title="分享" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="查找" />
         </menu>
     </item>
 

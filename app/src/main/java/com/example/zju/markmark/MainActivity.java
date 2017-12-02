@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity
     private TextView textView;
     private String text = "";
     private String splitedText = "";
-    private SpannableString markedText;
+    //private SpannableString markedText;
     private FloatingActionButton editFab;
     private FloatingActionButton backFab;
     private boolean editMode = false;
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         gson = new Gson();
+        textView = (TextView) findViewById(R.id.content);
 
         editFab = (FloatingActionButton) findViewById(R.id.edit_fab);
         editFab.setOnClickListener(new View.OnClickListener() {
@@ -71,7 +73,6 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 editFab.setVisibility(View.GONE);
                 backFab.setVisibility(View.VISIBLE);
-                textView = (TextView) findViewById(R.id.content);
                 //text = textView.getText().toString();
                 editMode = !editMode;
                 StringBuffer newText = new StringBuffer();
@@ -170,8 +171,8 @@ public class MainActivity extends AppCompatActivity
                     }
                 }*/
             }
-            Log.i(TAG, "onStart()");
         }
+        Log.i(TAG, "onStart()");
     }
 
     @Override
@@ -213,10 +214,7 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Toast.makeText(MainActivity.this,"Setting",Toast.LENGTH_SHORT).show();
-            return true;
-        } else if (id == R.id.font_big) {
+        if (id == R.id.font_big) {
             textView = (TextView) findViewById(R.id.content);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_PX,textView.getTextSize()+3);//getTextSize获取的值是px的值
         } else if (id == R.id.font_small) {
@@ -237,19 +235,20 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(MainActivity.this,FileListActivity.class);
             intent.putExtra("file_type","txt");
             startActivity(intent);
-        } else if (id == R.id.nav_savejson) {
-
         } else if (id == R.id.nav_openjson) {
             editMode =false;
             Intent intent = new Intent(MainActivity.this,FileListActivity.class);
             intent.putExtra("file_type","json");
             startActivity(intent);
-        } else if (id == R.id.nav_manage) {
-
+        } else if (id == R.id.nav_label) {
+            Toast.makeText(MainActivity.this,"抱歉，此功能尚未开放",Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_intro) {
+            editFab.setVisibility(View.GONE);
+            backFab.setVisibility(View.GONE);
+            textView.setText(R.string.introduction);
+            //Toast.makeText(MainActivity.this,R.string.introduction,Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+            Toast.makeText(MainActivity.this,"抱歉，此功能尚未开放",Toast.LENGTH_SHORT).show();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -363,7 +362,8 @@ public class MainActivity extends AppCompatActivity
         for (int i=0; i<size; i++) {
             lens[i] = sentences[i].length()+1;
         }
-        markedText = new SpannableString(text);
+        //markedText = new SpannableString(text);
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
         for ( Mark mark : markList ) {
             int sentID = mark.getSentID();
             int base = 0;
@@ -371,15 +371,22 @@ public class MainActivity extends AppCompatActivity
                 base += lens[ID];
             }
             Log.d(TAG, "base: "+base);
+            int lastEnd = -1;
             for (MarkEntity markEntity : mark.getEntityMentions()) {
-                int start = base + markEntity.getStart();
-                int end = base + markEntity.getEnd() + 1;//what?!
-                Log.d(TAG, "start: "+start+" end: "+end);
+                String label = markEntity.getLabel();
+                //int start = base + markEntity.getStart();
+                int end = base + markEntity.getEnd();
+                Log.d(TAG, "end: "+end);
+                ssb.append( new SpannableString(text.substring(lastEnd+1,end)) );
                 ForegroundColorSpan colorSpan = new ForegroundColorSpan(Color.parseColor("#0099EE"));
-                markedText.setSpan(colorSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                //markedText.setSpan(colorSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                SpannableString ss = new SpannableString(label);
+                ss.setSpan(colorSpan, 0, label.length()-1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                ssb.append(ss);
+                lastEnd = end;
             }
-
+            ssb.append( new SpannableString(text.substring(lastEnd+1,text.length()-1)));
         }
-        textView.setText(markedText);
+        textView.setText(ssb);
     }
 }

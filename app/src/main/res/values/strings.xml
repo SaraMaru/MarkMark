@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">MarkMark</string>
 
-    <string name="welcome">Hello! (^ω^)</string>
+    <string name="welcome">MarkMark感谢您的使用!</string>
+    <string name="contact">联系邮箱：xxxxxxx@yyy.com</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -9,4 +10,24 @@
     <string name="action_settings">设置</string>
     <string name="action_show_all">显示全部文件</string>
     <string name="action_default_folder">显示默认位置的文件</string>
+
+    <string name="introduction">
+        1. 如何打开文本文件？\n\n
+        您可以使用文件管理工具，将需要标注的文本文件放在MarkMark文件夹下的txt文件夹里，这样点开侧边栏的“打开TXT”就能直接在列表里看到您的文本文件了。\n\n
+        当然，为了方便起见，您也可以直接将文本文件放在存储目录下的任意文件夹下，我们右上角菜单的“显示全部文件”可以让您很快捷地找到您的文件。\n\n
+        2. 如何标注文本？\n\n
+        在打开文本文件后，点击右下角的浮动按钮便可以将文本分成一个一个的句子。\n\n
+        在分句模式下，您只要点击句子，就可以进入对这个句子的标注模式。\n\n
+        在标注模式中，与其他文本编辑文件不同，您在选择文本时不需要长按触发，只需要轻触滑动或者点击字符便可选择想要的文本，并可以通过再次轻触滑动或者点击字符进行加选减选。\n\n
+        每次选择后都有对话卡片弹出，对话卡片上共有三种实体（国家、城市、人物）和两种关系（城市及其所在国家、人物及其所属国家）可以选择，不同的实体以不同的颜色填充加以区分，
+        而不同的关系则以不同颜色的线框以示区别，并且，关系的两个实体之间还有细线相连，使其更加一目了然。\n\n
+        标记关系的操作方法是（以“城市->国家”为例）：选中代表箭头左方事物的词语（一座城市），点击对话卡片中的对应选项（“关系：城市->国家”），然后选中代表箭头右方事物的词语（城市所属的国家），
+        点击对话卡片中跟刚才一样的选项（“关系：城市->国家”），系统就会自动将这两个词标记并联系起来。\n\n
+        您也可以通过选择之前标注内容中的任意部分并点击对话卡片上的“删除”将其取消标注。\n\n
+        标记信息以json格式存储，这些信息将以句子为单位自动保存到MarkMark下的json文件夹里，无论txt文件是哪里的，标记结果都会被保存到这个文件夹中。\n\n
+        3. 如何查看结果？\n\n
+        重新进入到阅读文本界面就可以看到标注结果了。\n\n
+        也可以打开侧边栏，选择“浏览JSON”，查看json源文件。\n\n
+    </string>
+
 </resources>

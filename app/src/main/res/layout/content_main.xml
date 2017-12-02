@@ -21,7 +21,7 @@
         android:textIsSelectable="true"
         android:textColor="@color/textDarkGray"
         android:textColorHighlight="@color/textHighlight"
-        android:text="@string/welcome" />
+        android:text="" />
 
     <!--<android.support.v7.widget.RecyclerView
         android:id="@+id/recycle_view"
